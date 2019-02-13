@@ -6,6 +6,7 @@ import (
 	//"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	// yum install git -y   go get github.com/go-sql-driver/mysql
 )
 
 func main() {
