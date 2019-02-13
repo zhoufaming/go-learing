@@ -1,6 +1,7 @@
 package main
 
 import "fmt"
+import "strconv"
 
 type Human struct {
 	name string
@@ -48,7 +49,8 @@ func main() {
 	paul := Student{Human{"Paul", 26, "111-222-XXX"}, "Harvard", 100}
 	sam := Employee{Human{"Sam", 36, "444-222-XXX"}, "Golang Inc.", 1000}
 	tom := Employee{Human{"Tom", 37, "222-444-XXX"}, "Things Ltd.", 5000}
-
+	Bob := Human{"Bob", 39, "000-7777-XXX"}
+	fmt.Println("This Human is : ", Bob)
 	//定义Men类型的变量i
 	var i Men
 
@@ -73,4 +75,8 @@ func main() {
 	for _, value := range x{
 		value.SayHi()
 	}
+}
+// 通过这个方法 Human 实现了 fmt.Stringer
+func (h Human) String() string {
+	return "❰"+h.name+" - "+strconv.Itoa(h.age)+" years -  ✆ " +h.phone+"❱"
 }
