@@ -1,4 +1,4 @@
-package awesomeProjecr
+package main
 
 import (
 	"fmt"
