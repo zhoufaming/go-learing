@@ -1,0 +1,103 @@
+1、要开始一个单元测试，需要准备一个 go 源码文件，在命名文件时需要让文件必须以_test结尾。如main_test.go
+
+单元测试源码文件可以由多个测试用例组成，每个测试用例函数需要以Test为前缀，例如：func TestXXX( m *testing.M )
+
+func TestMa(m *testing.M) {
+    fmt.Println("hello world")
+}
+
+[root@pyuser1 awesomeProject]# go test simple_test.go 
+ok      command-line-arguments  0.004s
+
+ok 表示测试通过 0.004s 表示花费时间 command-line-arguments 是测试用例需要用到的一个包名
+
+2、附加参数中添加了-v，可以让测试时显示详细的流程
+[root@pyuser1 awesomeProject]# go test -v simple_test.go 
+hello world
+ok      command-line-arguments  0.004s
+
+
+
+
+3、使用-run参数选择需要的测试用例单独执行  跟随的测试用例的名称支持正则表达式:
+
+[root@pyuser1 awesomeProject]# go test -v -run TestHuman$ simple_test.go 
+=== RUN   TestHuman
+are you ok
+--- PASS: TestHuman (0.00s)
+PASS
+ok      command-line-arguments  0.005s
+
+4、标记单元测试结果:
+当需要终止当前测试用例时，可以使用 FailNow
+只标记错误不终止测试的方法可以使用 Fail
+
+[root@pyuser1 awesomeProject]# go test -v -run TestFail simple_test.go 
+=== RUN   TestFailNow
+before fail
+--- FAIL: TestFailNow (0.00s)
+=== RUN   TestFail
+before fail
+after fail
+--- FAIL: TestFail (0.00s)
+FAIL
+FAIL    command-line-arguments  0.004s
+
+5、单元测试日志:
+每个测试用例可能并发执行，使用 testing.T 提供的日志输出可以保证日志跟随这个测试上下文一起打印输出
+Log	打印日志，同时结束测试
+Logf	格式化打印日志，同时结束测试
+Error	打印错误日志，同时结束测试
+Errorf	格式化打印错误日志，同时结束测试
+Fatal	打印致命日志，同时结束测试
+Fatalf	格式化打印致命日志，同时结束测试
+
+6、基准测试
+基准测试可以测试一段程序的运行性能及耗费 CPU 的程度
+[root@pyuser1 awesomeProject]# go test -test.bench ^Benchmark_Add$ -test.run ^$ simple_test.go 
+goos: linux
+goarch: amd64
+Benchmark_Add-8         10000000               210 ns/op
+PASS
+ok      command-line-arguments  2.337s
+
+自定义测试时间:
+[root@pyuser1 awesomeProject]# go test -test.bench ^Benchmark_Add$ -test.run ^$ -benchtime=5s simple_test.go 
+goos: linux
+goarch: amd64
+Benchmark_Add-8         30000000               219 ns/op
+PASS
+ok      command-line-arguments  6.805s
+
+内存分配情况:
+[root@pyuser1 awesomeProject]# go test -test.bench ^Benchmark_Add$ -test.run ^$ --benchmem simple_test.go 
+goos: linux
+goarch: amd64
+Benchmark_Add-8         10000000               224 ns/op              16 B/op          2 allocs/op
+PASS
+ok      command-line-arguments  2.459s
+
+控制计时器：
+从想要测试的代码处开始计时
+func Benchmark_Add(b *testing.B) {
+	// 重置计时器
+	b.ResetTimer()
+	// 停止计时器
+	b.StopTimer()
+	// 开始计时器
+	var n int
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		n++
+		fmt.Sprintf("%d", n)
+	}
+
+}
+[root@pyuser1 awesomeProject]# go test -test.bench ^Benchmark_Add$ -test.run ^$  simple_test.go 
+goos: linux
+goarch: amd64
+Benchmark_Add-8         10000000               222 ns/op
+PASS
+ok      command-line-arguments  2.430s
+
+
