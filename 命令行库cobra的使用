@@ -1,0 +1,62 @@
+//go get -u github.com/spf13/cobra 
+package main
+import (
+	"fmt"
+	"github.com/spf13/cobra"
+	"os"
+)
+var podname string
+var namespace string
+
+func NewSchedulerCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use: "kube-scheduler",
+		Long: `The Kubernetes scheduler is a policy-rich, topology-aware,
+workload-specific function that significantly impacts availability, performance,
+and capacity. The scheduler needs to take into account individual and collective
+resource requirements, quality of service requirements, hardware/software/policy
+constraints, affinity and anti-affinity specifications, data locality, inter-workload
+interference, deadlines, and so on. Workload-specific requirements will be exposed
+through the API as necessary.`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(podname) == 0 {
+				cmd.Help()
+				return
+			}
+			fmt.Println(podname,namespace)
+		},
+	}
+
+	return cmd
+}
+
+
+
+
+func main(){
+	cmd := NewSchedulerCommand()
+	cmd.Flags().StringVarP(&podname, "podname", "p", "", "pod's name")
+	cmd.Flags().StringVarP(&namespace, "namespace", "n", "", "namespace's name")
+	if err := cmd.Execute(); err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(1)
+	}
+}
+
+
+The Kubernetes scheduler is a policy-rich, topology-aware,
+workload-specific function that significantly impacts availability, performance,
+and capacity. The scheduler needs to take into account individual and collective
+resource requirements, quality of service requirements, hardware/software/policy
+constraints, affinity and anti-affinity specifications, data locality, inter-workload
+interference, deadlines, and so on. Workload-specific requirements will be exposed
+through the API as necessary.
+
+Usage:
+  kube-scheduler [flags]
+
+Flags:
+  -p, --pod string         pod's name
+  -h, --help               help for kube-scheduler
+  -n, --namespace string   namespace's name
+
